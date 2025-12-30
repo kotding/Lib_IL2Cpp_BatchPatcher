@@ -1,63 +1,50 @@
-LibIl2Cpp Batch Patcher
+# LibIl2Cpp Batch Patcher
 
-A C# desktop application for batch patching code into libil2cpp.so with a user-friendly interface.
+A C# desktop application for batch patching code into `libil2cpp.so` with a user-friendly interface.
 
-Features
+## Features
+- Batch patch multiple offsets at once
+- Supports ARMv7 and ARM64
+- 40+ preset codes for ARMv7, 30+ for ARM64
+- Custom hex input
+- Automatic backup before saving
+- Easy-to-use WinForms UI
 
-Batch patch multiple offsets at once
+## Screenshot
+![LibIl2Cpp Batch Patcher](<img width="777" height="584" alt="image" src="https://github.com/user-attachments/assets/a6567225-f980-4c78-8ce3-0bb6ec3d0294" />
+)
 
-Supports ARMv7 and ARM64
+## Usage
+1. Select architecture (ARMv7 or ARM64)
+2. Open `libil2cpp.so`
+3. Add patches:
+   - Enter offset in hex (`1A2B3C` or `0x1A2B3C`)
+   - Select a preset code or enter custom hex
+4. Manage rows (Add / Delete)
+5. Click **Patch All**
+6. Click **Save File**
 
-40+ preset codes for ARMv7, 30+ for ARM64
+## Preset Codes
 
-Custom hex input
+### ARMv7
+- Boolean values (1 / 0)
+- Common numbers: 2, 7, 10, 15, 16, 17, 50, 255
+- Large values: 1K, 10K, 100K, 1M, 10M, 12M
+- Float values (0–2000)
+- Special: NOP, Speed Hack, Freeze values
 
-Automatic backup before saving
+### ARM64
+- Boolean values (1 / 0)
+- Common numbers: 2, 7, 10, 15, 16, 17, 50, 100, 255
+- Large values: 1K–10M, Max Int32
+- Float / Double values (0.0–1000.0)
+- Instructions: NOP, Return, Branch
 
-Easy-to-use WinForms UI
+## Hex Format
+- **Offset**: `1A2B3C` or `0x1A2B3C`
+- **Hex Code**: `48 65 6C 6F` or `48656C6F`
 
-Usage
-
-Select architecture (ARMv7 or ARM64)
-
-Open libil2cpp.so
-
-Add patches (hex offset + preset or custom hex)
-
-Add/Delete rows as needed
-
-Click Patch All, then Save File
-
-Preset Codes
-
-ARMv7: Booleans, common numbers, large values, floats, NOP, speed hack, freeze
-
-ARM64: Booleans, numbers, large values, floats/doubles, NOP, return, branch
-
-Hex Format
-
-Offset: 1A2B3C or 0x1A2B3C
-
-Hex: 48 65 6C 6C 6F or 4865616C6C6F
-
-Build
+## Build
+```bash
 dotnet build
 dotnet run --project LibIl2CppPatcher
-
-Requirements
-
-.NET 8.0 (Windows)
-
-Windows Forms
-
-Notes
-
-Backups are created automatically (.backup)
-
-Double-check offsets and bytes before patching
-
-Supports files up to 100MB
-
-License
-
-MIT License
