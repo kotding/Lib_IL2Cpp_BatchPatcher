@@ -280,6 +280,7 @@ namespace LibIl2CppPatcher
             saveButton.Click += SaveFile_Click;
             patchAllButton.Click += PatchAll_Click;
             patchGrid.CellValueChanged += PatchGrid_CellValueChanged;
+            patchGrid.EditingControlShowing += PatchGrid_EditingControlShowing;
             
             // Initialize with default architecture
             UpdatePresetOptions();
@@ -358,15 +359,48 @@ namespace LibIl2CppPatcher
             // If preset changed, update custom code
             if (e.ColumnIndex == patchGrid.Columns["Preset"].Index)
             {
-                var presetValue = row.Cells["Preset"].Value?.ToString();
-                var selectedArch = architectureComboBox.SelectedItem?.ToString() ?? "ARMv7";
-                
-                if (!string.IsNullOrEmpty(presetValue) && 
-                    presetCodesByArch.ContainsKey(selectedArch) &&
-                    presetCodesByArch[selectedArch].ContainsKey(presetValue))
+                UpdateCustomCodeFromPreset(row);
+            }
+        }
+
+        private void PatchGrid_EditingControlShowing(object? sender, DataGridViewEditingControlShowingEventArgs e)
+        {
+            // Check if we're editing the Preset column
+            if (patchGrid.CurrentCell.ColumnIndex == patchGrid.Columns["Preset"].Index)
+            {
+                if (e.Control is ComboBox comboBox)
                 {
-                    row.Cells["CustomCode"].Value = presetCodesByArch[selectedArch][presetValue];
+                    // Remove any existing event handler to avoid duplicates
+                    comboBox.SelectionChangeCommitted -= ComboBox_SelectionChangeCommitted;
+                    // Add the event handler
+                    comboBox.SelectionChangeCommitted += ComboBox_SelectionChangeCommitted;
                 }
+            }
+        }
+
+        private void ComboBox_SelectionChangeCommitted(object? sender, EventArgs e)
+        {
+            if (sender is ComboBox comboBox && patchGrid.CurrentRow != null)
+            {
+                // Update the cell value immediately
+                patchGrid.CurrentCell.Value = comboBox.SelectedItem;
+                // Update the custom code
+                UpdateCustomCodeFromPreset(patchGrid.CurrentRow);
+                // Refresh the grid to show changes
+                patchGrid.RefreshEdit();
+            }
+        }
+
+        private void UpdateCustomCodeFromPreset(DataGridViewRow row)
+        {
+            var presetValue = row.Cells["Preset"].Value?.ToString();
+            var selectedArch = architectureComboBox.SelectedItem?.ToString() ?? "ARMv7";
+            
+            if (!string.IsNullOrEmpty(presetValue) && 
+                presetCodesByArch.ContainsKey(selectedArch) &&
+                presetCodesByArch[selectedArch].ContainsKey(presetValue))
+            {
+                row.Cells["CustomCode"].Value = presetCodesByArch[selectedArch][presetValue];
             }
         }
 
